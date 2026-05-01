@@ -119,20 +119,18 @@ def get_db_connection():
 # ============================================================================
 # HEALTH CHECK
 # ============================================================================
-
 def check_database_connection() -> bool:
     """Check if database is accessible"""
     try:
         db = SessionLocal()
         # Try to execute a simple query
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))  # ← ADD text() HERE
         db.close()
         logger.info("✅ Database connection OK")
         return True
     except Exception as e:
         logger.error(f"❌ Database connection failed: {str(e)}")
         return False
-
 # ============================================================================
 # CONTEXT MANAGERS
 # ============================================================================
