@@ -1,0 +1,89 @@
+{
+  "$schema": "https://railway.app/schema.json",
+  "build": {
+    "builder": "dockerfile",
+    "context": ".",
+    "dockerfile": "Dockerfile"
+  },
+  "deploy": {
+    "startCommand": "python -m uvicorn main_complete:app --host 0.0.0.0 --port $PORT",
+    "restartPolicy": "on_failure",
+    "numReplicas": 1
+  },
+  "environments": {
+    "production": {
+      "variables": {
+        "ENVIRONMENT": "production",
+        "DEBUG": "false",
+        "LOG_LEVEL": "INFO",
+        "PORT": "8000"
+      }
+    },
+    "development": {
+      "variables": {
+        "ENVIRONMENT": "development",
+        "DEBUG": "true",
+        "LOG_LEVEL": "DEBUG",
+        "PORT": "8000"
+      }
+    }
+  },
+  "variables": {
+    "ENVIRONMENT": {
+      "description": "Application environment (production/development)",
+      "value": "production"
+    },
+    "DEBUG": {
+      "description": "Enable debug mode",
+      "value": "false"
+    },
+    "PORT": {
+      "description": "Server port",
+      "value": "8000"
+    },
+    "SHAREKHAN_CLIENT_ID": {
+      "description": "Sharekhan API Client ID",
+      "value": ""
+    },
+    "SHAREKHAN_API_KEY": {
+      "description": "Sharekhan API Key",
+      "value": ""
+    },
+    "SHAREKHAN_SECRET_KEY": {
+      "description": "Sharekhan Secret Key",
+      "value": ""
+    },
+    "NEWSAPI_KEY": {
+      "description": "NewsAPI Key (optional)",
+      "value": ""
+    },
+    "CLAUDE_API_KEY": {
+      "description": "Claude API Key (optional)",
+      "value": ""
+    },
+    "DATABASE_URL": {
+      "description": "PostgreSQL connection string",
+      "value": ""
+    },
+    "REDIS_URL": {
+      "description": "Redis connection string",
+      "value": ""
+    }
+  },
+  "services": {
+    "postgres": {
+      "service": "postgres",
+      "version": "15"
+    },
+    "redis": {
+      "service": "redis",
+      "version": "7"
+    }
+  },
+  "healthcheck": {
+    "path": "/health",
+    "interval": 30,
+    "timeout": 10,
+    "unhealthy_threshold": 3
+  }
+}

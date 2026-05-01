@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: stock_prediction_db
+    environment:
+      POSTGRES_USER: stock_user
+      POSTGRES_PASSWORD: stock_password
+      POSTGRES_DB: stock_prediction
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - stock_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stock_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: stock_prediction_cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - stock_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI Application
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stock_prediction_api
+    environment:
+      DATABASE_URL: postgresql://stock_user:stock_password@postgres:5432/stock_prediction
+      REDIS_URL: redis://redis:6379
+      ENVIRONMENT: development
+      DEBUG: "true"
+      LOG_LEVEL: INFO
+      SHAREKHAN_CLIENT_ID: ${SHAREKHAN_CLIENT_ID:-}
+      SHAREKHAN_API_KEY: ${SHAREKHAN_API_KEY:-}
+      SHAREKHAN_SECRET_KEY: ${SHAREKHAN_SECRET_KEY:-}
+      NEWSAPI_KEY: ${NEWSAPI_KEY:-}
+      CLAUDE_API_KEY: ${CLAUDE_API_KEY:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+    networks:
+      - stock_network
+    command: python -m uvicorn main_complete:app --host 0.0.0.0 --port 8000 --reload
+
+  # pgAdmin (PostgreSQL Management)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: stock_prediction_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - stock_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  stock_network:
+    driver: bridge
+
+# How to use:
+# 1. Create .env file with your credentials
+# 2. docker-compose up -d (start all services)
+# 3. docker-compose logs -f (view logs)
+# 4. http://localhost:8000/docs (API docs)
+# 5. http://localhost:5050 (pgAdmin)
+# 6. docker-compose down (stop all services)
