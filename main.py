@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+app = FastAPI(title="StockAPI")
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    return {"status": "healthy"}
 
 @app.get("/")
 async def root():
