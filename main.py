@@ -161,18 +161,9 @@ async def root():
 # HEALTH CHECK
 # ============================================================================
 
-@app.get("/health", response_model=HealthResponse, tags=["Health"])
-async def health_check():
-    """Health check endpoint"""
-    logger.info("🏥 Health check requested")
-    
-    db_health = check_database_connection()
-    
-    return HealthResponse(
-        status="healthy" if db_health else "degraded",
-        timestamp=datetime.now().isoformat(),
-        version=settings.APP_VERSION
-    )
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 # ============================================================================
 # STOCK PREDICTION ENDPOINTS
