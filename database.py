@@ -167,10 +167,10 @@ def cleanup_db():
 # INITIALIZATION
 # ============================================================================
 
-# Initialize database on import
-try:
-    init_db()
-except Exception as e:
-    logger.error(f"Failed to initialize database: {str(e)}")
-    if not is_development():
-        raise
+# # Initialize database on import
+# try:
+#     init_db()
+# except Exception as e:
+#     logger.error(f"Failed to initialize database: {str(e)}")
+#     if not is_development():
+#         raise
