@@ -4,7 +4,7 @@ Database initialization and session management
 
 import logging
 from typing import Generator
-from sqlalchemy import create_engine, event, pool
+from sqlalchemy import create_engine, event, pool, text
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.pool import QueuePool, NullPool
 from config import settings, is_development
