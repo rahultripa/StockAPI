@@ -34,8 +34,8 @@ python-dateutil==2.8.2
 # Logging & Monitoring
 python-json-logger==2.0.7
 
-# Sharekhan API Integration
-shareconnectpython>=1.0.0
+# Sharekhan API Integration (install from GitHub)
+# git+https://github.com/Sharekhan-API/shareconnectpython.git
 
 # Data Processing & ML
 numpy==1.26.2
